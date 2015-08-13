@@ -82,17 +82,28 @@ public class Robot extends SampleRobot {
     	double forwardThrottle;
     	double turnThrottle;
     	
+    	boolean prevFrontArmButton = false;
+    	boolean prevBackArmButton = false;
+    	
+    	double secondaryStickZ;
+    	
         while (isOperatorControl() && isEnabled()) {
         	forwardThrottle = Utilities.speedCurve(Utilities.deadZone(-mainStick.getY(), Constants.DEAD_ZONE), Constants.SPEED_CURVE);
             turnThrottle = Utilities.speedCurve(Utilities.deadZone(mainStick.getX(), Constants.DEAD_ZONE), Constants.SPEED_CURVE);
         	driveTrain.drive(forwardThrottle, turnThrottle);      
             
-            frontArm.setArmPosition(mainStick.getRawButton(3));
-            backArm.setArmPosition(mainStick.getRawButton(2));
+        	//toggle code for front arm
+        	if(mainStick.getRawButton(3) && !prevFrontArmButton) 
+        		frontArm.setArmPosition(!frontArm.getArmPosition());
+        	prevFrontArmButton = mainStick.getRawButton(3);
+        	
+        	//toggle code for back arm
+        	if(mainStick.getRawButton(2) && !prevBackArmButton)
+        		backArm.setArmPosition(!backArm.getArmPosition());
+        	prevBackArmButton = mainStick.getRawButton(2);
             
-            //Switches range of z-axis from [1,-1] to [0,1]
-            double secondaryStickZ = (-0.5 * secondaryStick.getZ()) + 0.5;
-            System.out.println("secondaryStickZ: " + secondaryStickZ);
+            //Switches z-axis from a range of [1,-1] to [0,1]
+            secondaryStickZ = (-0.5 * secondaryStick.getZ()) + 0.5;
             
             /*
              * If front arm is out and the trigger is pressed, in-take balls
